@@ -74,12 +74,6 @@ if k>1
     sr.u(temp,k) = sr.u(temp,k-1);
 end
 
-% if k==10
-%     sr.A  = gp.a;
-%     sr.B  = gp.b;
-%     sr.C  = gp.c;
-%     sr.Br = gp.br;
-% end
 
 end
 
