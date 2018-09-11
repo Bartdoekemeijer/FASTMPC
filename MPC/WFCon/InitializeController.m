@@ -9,7 +9,7 @@ gp.Nsim       = Wp.N/(2*Wp.h);      % total simulation time
 gp.Nh         = 10;                 % # samples in prediction horizon
 gp.Na         = Wp.Nt;              % # wind turbines
 gp.Nu         = gp.Na;              % #inputs
-gp.Nx         = 3*gp.Na+1;          % #states
+gp.Nx         = 14+1;          % #states (this one you have to know before loading turbine model)
 
 gp.MF         = logical(repmat([repmat([1 0 0]',gp.Na,1); 0],gp.Nh,1));
 gp.Mf         = logical([repmat([1 0 0]',gp.Na,1); 0]);
@@ -20,7 +20,7 @@ gp.ME         = logical(repmat([zeros(gp.Nx-1,1); 1],gp.Nh,1));
 
 gp.Q          = 1e4*eye(gp.Nh);                 % weigth on tracking
 gp.S          = 0*eye(gp.Nh*gp.Na);             % weigth on variation of the force
-gp.R          = 0*1e4*eye(gp.Nh*gp.Nu);         % weigth on control signal
+gp.R          = 1e4*eye(gp.Nh*gp.Nu);         % weigth on control signal
 
 gp.duc        = 2e-1;                           % limitation on du/dt
 gp.dfc        = Inf;                            % limitation on dF/dt
@@ -39,28 +39,23 @@ gp.Pnref(Wp.N0+1:end) = 0.6*gp.Pgreedy ;%+ .5*gp.Pgreedy*gp.AGCdata(1:gp.Nsim+gp
 
 ap              = struct;
 
-ap.Rr           = 60;                                            % rotor radius
-ap.tau          = 5;                                             % time constant filter CT'
-ap.Ts           = 1;
-ap.cf           = 0.5*pi*ap.Rr^2*ones(gp.Na,gp.Nsim);
-ap.cp           = 0.5*pi*ap.Rr^2*ones(gp.Na,gp.Nsim);
-ap.uM           = 2;                                             % maximum CT'
-ap.yaw          = zeros(1,gp.Na);
-
-[num,den]       = tfdata(c2d(tf(1,[ap.tau 1]),ap.Ts),'v');       % filter on force
-ap.sys          = c2d(tf(1,[ap.tau 1]),1);
+ap.uM           = 5*10^6;       % maximim power input
+ap.um           = .1*10^6;      % minimum power input
+ap.PM           = ap.uM;        % upperbounds and lower bounds output
+ap.Pm           = ap.um;
+ap.FM           = ap.uM;
+ap.Fm           = ap.um;
 
 for kk = 1:gp.Na    
-    ap.a{kk}     = kron(eye(3),-den(2));
-    ap.bcoef{kk} = num(2)*[-1;1;1];
-    ap.c{kk}     = eye(3);   % needs to be I, otherwise inconsistency with constraints                                    
+    ap.a{kk}     = Ai; %load model turbine i from Pref to [Pi Fi]
+    ap.b{kk}     = Bi;
+    ap.c{kk}     = Ci;   
+    ap.d{kk}     = Di;
 end                                                                                                                              
-
 
 % constraints definitions
 ap.duc        = 5e-2;                                           % limitation on du/dt
 ap.dfc        = Inf*ones(gp.Na,gp.Nsim);                        % limitation on dF/dt
-ap.sd         = 10000;                                          % time at which T3 shuts down
 ap.MF         = logical(repmat([1 0 0]',gp.Nh,1));
 ap.Mf         = logical([repmat([1 0 0]',gp.Na,1); 0]);
 ap.MP         = logical(repmat([0 1 0]',gp.Nh,1));
@@ -68,17 +63,14 @@ ap.Mp         = logical([repmat([0 1 0]',gp.Na,1); 0]);
 ap.MU         = logical(repmat([0 0 1]',gp.Nh,1));
 ap.Mu         = logical([repmat([0 0 1]',gp.Na,1); 0]);
 
-
 %% simulation results
 
 sr                = struct;
 
-sr.x              = zeros(gp.Nx,gp.Nsim);       % state x=[F P hat{CT'}]
+sr.x              = zeros(gp.Nx,gp.Nsim);       % state x
 sr.U              = zeros(gp.Nh,gp.Nsim,gp.Na);
-sr.u              = zeros(gp.Na,gp.Nsim);       % control signal CT'
-sr.CT             = zeros(gp.Na,gp.Nsim);       % control signal CT
-sr.v              = 5*ones(gp.Na,gp.Nsim);      % wind velocity at rotor (needs initial guess)
-sr.y              = zeros(gp.Nx,gp.Nsim);       % output y=x
+sr.u              = zeros(gp.Na,gp.Nsim);       % control signal Pr
+sr.y              = zeros(gp.Nx,gp.Nsim);       % output 
 sr.e              = zeros(1,gp.Nsim);           % wind farm error
 sr.error          = zeros(gp.Na,1);             % #of wrong optimization steps
 
