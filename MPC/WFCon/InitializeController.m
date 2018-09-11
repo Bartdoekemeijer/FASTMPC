@@ -32,8 +32,8 @@ load(strcat(Wp.controller,'/libraries/AGC_PJM_RegD_Norm2s')); gp.AGCdata    = AG
 
 gp.Pgreedy            = 7.490235760251439e+06; % Simulation horizon of 900s
 
-gp.Pnref(1:Wp.N0)     = 0.7*gp.Pgreedy; 
-gp.Pnref(Wp.N0+1:end) = 0.7*gp.Pgreedy ;%+ .5*gp.Pgreedy*gp.AGCdata(1:gp.Nsim+gp.Nh-Wp.N0);
+gp.Pnref(1:Wp.N0)     = 0.6*gp.Pgreedy; 
+gp.Pnref(Wp.N0+1:end) = 0.6*gp.Pgreedy ;%+ .5*gp.Pgreedy*gp.AGCdata(1:gp.Nsim+gp.Nh-Wp.N0);
 
 %% turbine parameters
 
