@@ -11,17 +11,17 @@ xinit = sr.x(:,k);
     U  = sdpvar(gp.Nu*gp.Nh,1);
     
     % build wind farm model
-    [gp,ap] = wfmodel(k,sr,ap,gp);    
+    [gp,ap] = wfmodel(ap,gp);    
     
     % build contraints set
-    gp = constset(k,ap,gp);  
+    gp = constset(ap,gp);  
     
     % build matrices horizon
     gp = matsys(gp);         
 
     
-    X    = gp.A*xinit + gp.B*U + gp.Br*gp.Pnref(k:k+gp.Nh-1);%
-    Yobs = gp.C*X;    
+    X    = gp.A*xinit + gp.B*U + gp.Br*gp.Pnref(k:k+gp.Nh-1);
+    Yobs = gp.C*xinit + gp.D*U + gp.Dr*gp.Pnref(k:k+gp.Nh-1);    
 
     Fobs = Yobs(gp.MF);
     Pobs = Yobs(gp.MP); 
@@ -58,9 +58,8 @@ optimize(cons,cost,ops)
 
 
 %% assign the decision variables
-Xopt          = value(X);
-Uopt_hat      = Xopt(gp.MU);
-temp          = reshape(Uopt_hat,[gp.Na,gp.Nh]);
+Uopt        = value(U);
+temp        = reshape(Uopt,[gp.Na,gp.Nh]);
 for i=1:gp.Nh
     sr.U(i,k,:)   = temp(:,i); % full horizon optimal action
 end

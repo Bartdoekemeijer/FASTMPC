@@ -1,4 +1,4 @@
-function gp = constset(k,ap,gp)
+function gp = constset(ap,gp)
 
 yub = [];
 ylb = [];
@@ -9,32 +9,18 @@ ulb = [];
 % Pm <= P <= PM
 % Fm <= F <= FM
 for i=1:gp.Na
-    v   = ap.SwMes{i};
-    cf  = ap.cf(i,k);
-    cp  = ap.cp(i,k);
     
-    um  = 0;
-    if k>2
-        um=.1;
-    end
+    Pm  = ap.Pm;
+    PM  = ap.PM;
     
-    uM  = ap.uM;
-    if k>ap.sd && i==3
-        um = 0;
-        uM = 0;
-    end
+    Fm  = ap.Fm;
+    FM  = ap.FM;
     
-    Pm  = um.*v.^3.*cp;
-    PM  = uM.*v.^3.*cp;
+    yub = [yub; [FM PM]' ];
+    ylb = [ylb; [Fm Pm]' ];
     
-    Fm  = -uM.*v.^2.*cf;
-    FM  = -um.*v.^2.*cf;
-    
-    yub = [yub; [FM PM uM]' ];
-    ylb = [ylb; [Fm Pm um]' ];
-    
-    uub = [uub; uM];
-    ulb = [ulb; um];
+    uub = [uub; ap.uM];
+    ulb = [ulb; ap.um];
     
 end
 
