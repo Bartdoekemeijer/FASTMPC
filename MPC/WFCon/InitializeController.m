@@ -46,11 +46,15 @@ ap.Pm           = ap.um;
 ap.FM           = ap.uM;
 ap.Fm           = ap.um;
 
-for kk = 1:gp.Na    
-    ap.a{kk}     = Ai; %load model turbine i from Pref to [Pi Fi]
-    ap.b{kk}     = Bi;
-    ap.c{kk}     = Ci;   
-    ap.d{kk}     = Di;
+correct_input   = 1; % These need to be defined?
+correct_output  = 1:2;
+
+for kk = 1:gp.Na
+    ap.T{kk}     = ReadFASTLinear('Lin8_NREL5MW.lin');
+    ap.a{kk}     = ap.T{kk}.A; %load model turbine i from Pref to [Pi Fi]
+    ap.b{kk}     = ap.T{kk}.B(:,correct_input);
+    ap.c{kk}     = ap.T{kk}.C(correct_output,:);   
+    ap.d{kk}     = ap.T{kk}.D(correct_output,correct_input);
 end                                                                                                                              
 
 % constraints definitions
