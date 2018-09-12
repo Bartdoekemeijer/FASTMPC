@@ -16,17 +16,13 @@ for i=1:gp.Na
     Fm  = ap.Fm;
     FM  = ap.FM;
     
-    yub = [yub; [FM PM]' ];
-    ylb = [ylb; [Fm Pm]' ];
+    yub = [yub; [PM FM]' ];
+    ylb = [ylb; [Pm Fm]' ];
     
     uub = [uub; ap.uM];
     ulb = [ulb; ap.um];
     
 end
-
-% constraints wind farm error signal
-yub = [yub; Inf];  
-ylb = [ylb; -Inf];
 
 % constaints for the complete horizon
 gp.yub = repmat(yub, gp.Nh,1);

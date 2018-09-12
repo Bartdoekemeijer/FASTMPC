@@ -4,15 +4,14 @@ function gp = matsys(gp)
 
 Am  = gp.a;
 Bm  = gp.b;
-Bmr = gp.br;
 Cm  = gp.c;
 Dm  = gp.d;
-Dmr = gp.dr;
-
+Cme = gp.ce;
+Dme = gp.de;
 
 Nh = gp.Nh;
 
-A = Am;
+A  = Am;
 Ai = A;
 AA = Ai;
 for ii = 2:Nh
@@ -23,20 +22,13 @@ gp.A = AA;
 
 
 AiB = Bm;
-BB = kron(eye(Nh),AiB);
+BB  = kron(eye(Nh),AiB);
 for ii = 1:Nh-1
     AiB = A*AiB;
     BB = BB+kron(diag(ones(Nh-ii,1),-ii),AiB);
 end
 gp.B = BB;
 
-AiBr = Bmr;
-BBr = kron(eye(Nh),AiBr);
-for ii = 1:Nh-1
-    AiBr = A*AiBr;
-    BBr = BBr+kron(diag(ones(Nh-ii,1),-ii),AiBr);
-end
-gp.Br = BBr;
 
 C  = Cm;
 A  = Am;
@@ -57,16 +49,25 @@ for ii = 1:Nh-1
 end
 gp.D = DD;
 
-A     = Am;
-Ai   = eye(size(Am,1));
-DDr   = kron(eye(Nh),Dmr);
-for ii = 1:Nh-1
-    DDr = DDr+kron(diag(ones(Nh-ii,1),-ii),Cm*Ai*Bmr);
+Ce  = Cme;
+A   = Am;
+Ai  = eye(size(Am,1));
+CCe = Ce;
+for ii = 2:Nh
     Ai = A*Ai;
+    CCe = [CCe;Ce*Ai];
 end
-gp.Dr = DDr;
+gp.Ce = CCe;
 
-
+Ce   = Cme;
+A    = Am;
+Ai   = eye(size(Am,1));
+DDe  = kron(eye(Nh),Dme);
+for ii = 1:Nh-1
+    DDe = DDe+kron(diag(ones(Nh-ii,1),-ii),Ce*Ai*Bm);
+    Ai  = A*Ai;
+end
+gp.De = DDe;
 
 end
 

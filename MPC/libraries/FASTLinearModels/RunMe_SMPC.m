@@ -9,6 +9,10 @@ GS_KI = [-0.00806863400000000, -0.00696369500000000, -0.00555843000000000, -0.00
 T = 1:0.01:25;
 U = heaviside(T./max(T)-0.1);
 
+h  = .5;
+Td = 1:h:25;
+Ud = heaviside(Td./max(Td)-0.1);
+
 for i = 1:length(WINDSPEEDS)
     lindata = ReadFASTLinear(['Lin', int2str(WINDSPEEDS(i)), '_NREL5MW.lin']);
     
@@ -49,6 +53,9 @@ for i = 1:length(WINDSPEEDS)
     
     figure(2)
     lsim(sys_ex_C_CL, U, T), hold on
+    
+    figure(3)
+    lsim(c2d(sys_ex_C_CL,h), Ud, Td), hold on
 end
 figure(1)
 xlim([1e-2 1e1])
