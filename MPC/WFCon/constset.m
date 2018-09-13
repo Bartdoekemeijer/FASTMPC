@@ -9,18 +9,12 @@ ulb = [];
 % Pm <= P <= PM
 % Fm <= F <= FM
 for i=1:gp.Na
+        
+    yub = [yub; [ap.PM*gp.sc ap.FM*gp.sc]' ];
+    ylb = [ylb; [ap.Pm*gp.sc ap.Fm*gp.sc]' ];
     
-    Pm  = ap.Pm;
-    PM  = ap.PM;
-    
-    Fm  = ap.Fm;
-    FM  = ap.FM;
-    
-    yub = [yub; [PM FM]' ];
-    ylb = [ylb; [Pm Fm]' ];
-    
-    uub = [uub; ap.uM];
-    ulb = [ulb; ap.um];
+    uub = [uub; ap.uM*gp.sc];
+    ulb = [ulb; ap.um*gp.sc];
     
 end
 

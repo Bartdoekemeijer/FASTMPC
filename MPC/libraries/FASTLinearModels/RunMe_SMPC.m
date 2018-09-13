@@ -41,6 +41,7 @@ for i = 1:length(WINDSPEEDS)
     sys_ex_C = series(sys_ex, C);
 %     sys_ex_CT = TAU0*sys_ex_C/TAU0;
     sys_ex_C_CL = feedback(sys_ex_C,1,1,1);
+        
     sys_ex_C_CL.InputName = {'Power reference'};
     sys_ex_C_CL.OutputName = {'Power measured', 'Out-of-plane load'};
     sys_ex_CT_CL = TAU0*sys_ex_C_CL/TAU0;
