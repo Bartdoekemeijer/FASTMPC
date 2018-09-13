@@ -54,8 +54,8 @@ A   = Am;
 Ai  = eye(size(Am,1));
 CCe = Ce;
 for ii = 2:Nh
-    CCe = [CCe;Ce*Ai];
     Ai  = A*Ai;
+    CCe = [CCe;Ce*Ai];
 end
 gp.Ce = CCe;
 

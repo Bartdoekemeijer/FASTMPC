@@ -6,7 +6,7 @@ function [gp,ap,sr] =  InitializeController(Wp)
 gp            = struct;
 
 gp.Nsim       = Wp.N/(2*Wp.h);      % total simulation time
-gp.Nh         = 40;                 % # samples in prediction horizon
+gp.Nh         = 80;                 % # samples in prediction horizon
 gp.Na         = Wp.Nt;              % # wind turbines
 gp.Nu         = gp.Na;              % #inputs
 gp.Nx         = gp.Na*28;           % #states (28 is number of states one turbine model)
@@ -17,7 +17,7 @@ gp.Mf         = logical(repmat([0 1]',gp.Na,1));
 gp.MP         = logical(repmat(repmat([1 0]',gp.Na,1),gp.Nh,1));
 gp.Mp         = logical(repmat([1 0]',gp.Na,1));
 
-gp.Q          = 1*eye(gp.Nh);                 % weigth on tracking
+gp.Q          = .5*eye(gp.Nh);                 % weigth on tracking
 gp.R          = 1*eye(gp.Nh*gp.Nu);           % weigth on control signal
 
 gp.duc        = 1e5;                          % limitation on du/dt
