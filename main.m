@@ -4,7 +4,7 @@ addpath(genpath('MPC'));
 addpath(genpath('C:/Program Files/IBM/ILOG/CPLEX_Studio128')); % add cplex
 
 Wp.Nt    = 6;                        % #turbines
-Wp.N     = 2*floor(150/2);            % simulation period ( real simulation time is N-h )
+Wp.N     = 2*floor(250/2);            % simulation period ( real simulation time is N-h )
 Wp.h     = .5;                       % SOWFA sample period 
 Wp.k     = 0;                        % time index
 Wp.N0    = round(.1*Wp.N/(2*Wp.h));  % First n% of the simulation constant reference
