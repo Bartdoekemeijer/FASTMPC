@@ -4,7 +4,7 @@ addpath(genpath('MPC'));
 addpath(genpath('C:/Program Files/IBM/ILOG/CPLEX_Studio128')); % add cplex
 
 Wp.Nt    = 6;                        % #turbines
-Wp.N     = 2*floor(250/2);            % simulation period ( real simulation time is N-h )
+Wp.N     = 2*floor(250/2);           % simulation period ( real simulation time is N-h )
 Wp.h     = .5;                       % SOWFA sample period 
 Wp.k     = 0;                        % time index
 Wp.N0    = round(.1*Wp.N/(2*Wp.h));  % First n% of the simulation constant reference
@@ -28,14 +28,17 @@ while Wp.k<Wp.N/(2*Wp.h)
     if Wp.cl
         [sr,ap]      = consys_cent(Wp.k,sr,ap,gp); 
     else
-        sr.u(:,Wp.k) = 1e6*[1;-1;-1;-1;1;-1];
+        sr.u(:,Wp.k) = 1e6*[1 -1 -1 1 1 -1];
     end
     
     % 2) write control signals to SOWFA and read measurements
     sr       = run_sowfa(Wp.k,sr,ap,gp);
+
+    [sr,ap]  = obssys_cent(Wp.k,sr,ap,gp); 
+
     
-    xmes     = sr.xs(:,Wp.k+1);
-    ymes     = sr.ys(:,Wp.k);
+    xmes     = sr.xe(:,Wp.k);
+    ymes     = sr.ye(:,Wp.k);
     umes     = sr.u(:,Wp.k);
     
     % 5) store measurements in controller variables  
@@ -50,9 +53,11 @@ while Wp.k<Wp.N/(2*Wp.h)
 end
 
 %%
-Power = sr.y(gp.Mp,:);
-Force = sr.y(gp.Mf,:);
-Pwf   = sum(Power);
+P     = sr.ys(gp.Mp,:);
+Pe    = sr.ye(gp.Mp,:);
+F     = sr.ys(gp.Mf,:);
+Fe    = sr.ye(gp.Mf,:);
+Pwf   = sum(P);
 Pref  = gp.Pnref(1:length(Pwf));
 
 % plot
@@ -63,7 +68,8 @@ ll = 0;
 for kk=seq
     ll = ll + 1;
     subplot(2,3,ll)
-    stairs(Power(kk,:)/1e6,'b','linewidth',1.2);hold on;
+    stairs(P(kk,:)/1e6,'b','linewidth',1.2);hold on;
+    stairs(Pe(kk,:)/1e6,'r--','linewidth',1.2);
     str = strcat('$\delta P_',num2str(kk,'%.0f'),'$');
     ylabel([str,' [MW]'],'interpreter','latex');
     xlabel('$k$','interpreter','latex')
@@ -77,7 +83,8 @@ ll = 0;
 for kk=seq
     ll = ll + 1;
     subplot(2,3,ll)
-    stairs(Force(kk,:)/1e6,'b','linewidth',1.2);hold on;
+    stairs(F(kk,:)/1e6,'b','linewidth',1.2);hold on;
+    stairs(Fe(kk,:)/1e6,'r--','linewidth',1.2);
     str = strcat('$\delta M_',num2str(kk,'%.0f'),'$');
     ylabel([str,' [MNm]'],'interpreter','latex');
     xlabel('$k$','interpreter','latex')

@@ -11,6 +11,8 @@ gp.Na         = Wp.Nt;              % # wind turbines
 gp.Nu         = gp.Na;              % #inputs
 gp.Nx         = gp.Na*28;           % #states (28 is number of states one turbine model)
 gp.Ny         = gp.Na*2;            % #states (2 is number of outputs one turbine model)
+gp.W          = 3e2;
+gp.V          = gp.W;
 
 gp.MF         = logical(repmat(repmat([0 1]',gp.Na,1),gp.Nh,1));
 gp.Mf         = logical(repmat([0 1]',gp.Na,1));
@@ -51,8 +53,10 @@ for kk = 1:gp.Na
     ap.T{kk}     = FetchTurbineModel(WINDSPEEDS(kk),Wp.h);
     ap.a{kk}     = ap.T{kk}.A;  % load model turbine i from Prefi to [Pi Fi]
     ap.b{kk}     = ap.T{kk}.B;
+    ap.bn{kk}    = ones(size(ap.a{kk},1),1);
     ap.c{kk}     = ap.T{kk}.C;   
     ap.d{kk}     = ap.T{kk}.D;
+    ap.dn{kk}    = ones(size(ap.d{kk},1),1);
 end                                                                                                                              
 
 %% simulation results
@@ -66,6 +70,11 @@ sr.y              = zeros(gp.Ny,gp.Nsim);       % output
 sr.Y              = zeros(gp.Nh,gp.Nsim,gp.Ny);
 sr.e              = zeros(1,gp.Nsim);           % wind farm error
 sr.Z              = zeros(gp.Nh,gp.Nsim,1);     % wind farm error
+sr.n              = gp.W*randn(gp.Na,gp.Nsim);   % noise
+
+% observer variables
+sr.xe             = zeros(gp.Nx,gp.Nsim);       % state x
+sr.ye             = zeros(gp.Ny,gp.Nsim);       % output y
 
 % dummy variables
 sr.xs             = zeros(gp.Nx,gp.Nsim);       % state x
