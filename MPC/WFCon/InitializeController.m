@@ -9,7 +9,7 @@ gp.Nsim       = Wp.N/(2*Wp.h);      % total simulation time
 gp.Nh         = 100;                 % # samples in prediction horizon
 gp.Na         = Wp.Nt;              % # wind turbines
 gp.Nu         = gp.Na;              % #inputs
-gp.Nx         = gp.Na*28;           % #states (28 is number of states one turbine model)
+gp.Nx         = gp.Na*15;           % #states (15 is number of states one turbine model)
 gp.Ny         = gp.Na*2;            % #states (2 is number of outputs one turbine model)
 gp.W          = 3e2;
 gp.V          = gp.W;
@@ -70,7 +70,7 @@ sr.y              = zeros(gp.Ny,gp.Nsim);       % output
 sr.Y              = zeros(gp.Nh,gp.Nsim,gp.Ny);
 sr.e              = zeros(1,gp.Nsim);           % wind farm error
 sr.Z              = zeros(gp.Nh,gp.Nsim,1);     % wind farm error
-sr.n              = gp.W*randn(gp.Na,gp.Nsim);   % noise
+sr.n              = gp.W*randn(gp.Na,gp.Nsim);  % noise
 
 % observer variables
 sr.xe             = zeros(gp.Nx,gp.Nsim);       % state x
