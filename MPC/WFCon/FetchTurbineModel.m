@@ -20,9 +20,14 @@ TAU0 = lindata.u_op{iTAU0}*ETA_GEN;
 OMEGA0 = lindata.y_op{iOMEGA0}*pi/30;
 
 sys = ss(lindata.A, lindata.B, lindata.C*pi/30, lindata.D, 'InputName', lindata.u_desc, 'OutputName', lindata.y_desc);
-sys_ex = sys([iOMEGA0 iROOTMOOP], iTHETA0);
+
+%sys_ex = sys([iOMEGA0 iROOTMOOP], iTHETA0);
+sys_ex = sys(iOMEGA0, iTHETA0);
+
 sys_ex.InputName = {'Theta'};
-sys_ex.OutputName = {'Omega', 'Out-of-plane bending moment'};
+
+%sys_ex.OutputName = {'Omega', 'Out-of-plane bending moment'};
+sys_ex.OutputName = {'Omega'};
 
 Kp = interp1(GS_PITCH, GS_KP, THETA0);
 Ki = interp1(GS_PITCH, GS_KI, THETA0);
@@ -32,17 +37,14 @@ C = tf([Kp Ki],[1 0]);
 sys_dcfix   = zpk(min(pole(sys_ex)),0,1);
 sys_ex(1,1) = minreal(sys_dcfix*sys_ex(1,1),[],false);
 
-%[z,p,k]              = zpkdata(sys_ex(1,1),'v');
-%z(find(abs(z)<.01)) = [];
-%sys_ex(1,1)          = zpk(z,p,k);
-
-sys_ex = minreal(sys_ex,[],false);
+sys_ex      = minreal(sys_ex,[],false);
 
 % Create open loop
 sys_ex_C               = series(sys_ex, C);
 sys_ex_C_CL            = feedback(sys_ex_C,1,1,1);
 sys_ex_C_CL.InputName  = {'Power reference'};
-sys_ex_C_CL.OutputName = {'Power measured', 'Out-of-plane load'};
+%sys_ex_C_CL.OutputName = {'Power measured', 'Out-of-plane load'};
+sys_ex_C_CL.OutputName = {'Power measured'};
 
 sys_ex_C_CL            = c2d(sys_ex_C_CL,h);
 end
